@@ -24,7 +24,7 @@ func NewEpisodesService() (*EpisodesService, error) {
 }
 
 func (es *EpisodesService) GetEpisode(ctx context.Context, req *proto.EpisodeRequest) (*proto.EpisodeResponse, error) {
-	episode, err := es.client.GetEpisode(req.Season, req.Episode)
+	episode, err := es.client.GetEpisode(int32(req.Series), req.Season, req.Episode)
 	if err != nil {
 		err = status.New(codes.NotFound, err.Error()).Err()
 		return nil, err
@@ -42,7 +42,7 @@ func (es *EpisodesService) GetEpisode(ctx context.Context, req *proto.EpisodeReq
 }
 
 func (es *EpisodesService) GetSeason(ctx context.Context, req *proto.SeasonRequest) (*proto.SeasonResponse, error) {
-	episodes, err := es.client.GetSeason(req.Season)
+	episodes, err := es.client.GetSeason(int32(req.Series), req.Season)
 	if err != nil {
 		err = status.New(codes.NotFound, err.Error()).Err()
 		return nil, err
