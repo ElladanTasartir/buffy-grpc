@@ -1,0 +1,20 @@
+syntax="proto3";
+
+package episodes.v1;
+
+option go_package = "github.com/ElladanTasartir/buffy-grpc/gen/go/episodes/v1;episodes_v1;";
+
+service EpisodesService {
+  rpc GetEpisode(EpisodeRequest) returns (EpisodeResponse) {}
+}
+
+message EpisodeRequest {
+  int32 season = 1;
+  int32 episode = 2;
+}
+
+message EpisodeResponse {
+  string id = 1;
+  string name = 2;
+  string description = 3;
+}
