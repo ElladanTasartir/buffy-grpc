@@ -6,6 +6,15 @@ option go_package = "github.com/ElladanTasartir/buffy-grpc/gen/go/episodes/v1;ep
 
 service EpisodesService {
   rpc GetEpisode(EpisodeRequest) returns (EpisodeResponse) {}
+  rpc GetSeason(SeasonRequest) returns (SeasonResponse) {}
+}
+
+message Episode {
+  string id = 1;
+  string name = 2;
+  string description = 3;
+  string trivia = 4;
+  string screenshot = 5;
 }
 
 message EpisodeRequest {
@@ -14,7 +23,13 @@ message EpisodeRequest {
 }
 
 message EpisodeResponse {
-  string id = 1;
-  string name = 2;
-  string description = 3;
+  Episode episode = 1;
+}
+
+message SeasonRequest {
+  int32 season = 1;
+}
+
+message SeasonResponse {
+  repeated Episode episodes = 1;
 }
