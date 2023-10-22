@@ -7,7 +7,12 @@ import (
 	"net/http"
 )
 
-const API_URL = "https://buffy-angel-api.onrender.com/api/buffy"
+const API_URL = "https://buffy-angel-api.onrender.com/api"
+
+const (
+	BUFFY = iota + 1
+	ANGEL
+)
 
 type BuffyClient struct {
 	url        string
@@ -36,8 +41,8 @@ func NewBuffyClient() (*BuffyClient, error) {
 	}, nil
 }
 
-func (client *BuffyClient) GetEpisode(season, episode int32) (BuffyEpisode, error) {
-	resp, err := client.httpClient.Get(fmt.Sprintf("%s/season/%d/%d", client.url, season, episode))
+func (client *BuffyClient) GetEpisode(series, season, episode int32) (BuffyEpisode, error) {
+	resp, err := client.httpClient.Get(fmt.Sprintf("%s/%s/season/%d/%d", client.url, client.getSeriesName(series), season, episode))
 	if err != nil {
 		return BuffyEpisode{}, err
 	}
@@ -57,9 +62,9 @@ func (client *BuffyClient) GetEpisode(season, episode int32) (BuffyEpisode, erro
 	return buffyEpisode[0], err
 }
 
-func (client *BuffyClient) GetSeason(season int32) ([]BuffyEpisode, error) {
+func (client *BuffyClient) GetSeason(series, season int32) ([]BuffyEpisode, error) {
 	var episodes []BuffyEpisode
-	resp, err := client.httpClient.Get(fmt.Sprintf("%s/season/%d", client.url, season))
+	resp, err := client.httpClient.Get(fmt.Sprintf("%s/%s/season/%d", client.url, client.getSeriesName(series), season))
 	if err != nil {
 		return episodes, err
 	}
@@ -72,4 +77,15 @@ func (client *BuffyClient) GetSeason(season int32) ([]BuffyEpisode, error) {
 	}
 
 	return episodes, nil
+}
+
+func (client *BuffyClient) getSeriesName(series int32) string {
+	switch series {
+	case BUFFY:
+		return "buffy"
+	case ANGEL:
+		return "angel"
+	default:
+		return "buffy"
+	}
 }
