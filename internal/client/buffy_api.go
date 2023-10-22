@@ -19,6 +19,8 @@ type BuffyEpisode struct {
 	Id          string `json:"_id"`
 	Episode     string `json:"episodeName"`
 	Description string `json:"description"`
+	Trivia      string `json:"trivia"`
+	Screenshot  string `json:"episodeScreenshot"`
 }
 
 func NewBuffyClient() (*BuffyClient, error) {
@@ -40,10 +42,7 @@ func (client *BuffyClient) GetEpisode(season, episode int32) (BuffyEpisode, erro
 		return BuffyEpisode{}, err
 	}
 
-	defer func() {
-		err := resp.Body.Close()
-		client.logger.Error("Error occurred while closing Body", zap.Error(err))
-	}()
+	defer resp.Body.Close()
 
 	var buffyEpisode []BuffyEpisode
 	err = json.NewDecoder(resp.Body).Decode(&buffyEpisode)
@@ -56,4 +55,21 @@ func (client *BuffyClient) GetEpisode(season, episode int32) (BuffyEpisode, erro
 	}
 
 	return buffyEpisode[0], err
+}
+
+func (client *BuffyClient) GetSeason(season int32) ([]BuffyEpisode, error) {
+	var episodes []BuffyEpisode
+	resp, err := client.httpClient.Get(fmt.Sprintf("%s/season/%d", client.url, season))
+	if err != nil {
+		return episodes, err
+	}
+
+	defer resp.Body.Close()
+
+	err = json.NewDecoder(resp.Body).Decode(&episodes)
+	if err != nil {
+		return episodes, err
+	}
+
+	return episodes, nil
 }
