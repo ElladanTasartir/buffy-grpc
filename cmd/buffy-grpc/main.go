@@ -1,11 +1,12 @@
 package main
 
 import (
-	episodes_v1 "github.com/ElladanTasartir/buffy-grpc/gen/go/episodes/v1"
-	greeting_v1 "github.com/ElladanTasartir/buffy-grpc/gen/go/greeting/v1"
+	episodesv1 "github.com/ElladanTasartir/buffy-grpc/gen/go/episodes/v1"
+	greetingv1 "github.com/ElladanTasartir/buffy-grpc/gen/go/greeting/v1"
 	service "github.com/ElladanTasartir/buffy-grpc/internal/grpc"
 	"go.uber.org/zap"
 	"google.golang.org/grpc"
+	"google.golang.org/grpc/reflection"
 	"net"
 	"os"
 	"os/signal"
@@ -22,7 +23,7 @@ func main() {
 	var err error
 	logger, err = zap.NewProduction()
 	if err != nil {
-		panic(err)
+		logger.Panic("Failed to create logger", zap.Error(err))
 	}
 
 	defer logger.Sync()
@@ -30,9 +31,15 @@ func main() {
 	initListener()
 
 	server = grpc.NewServer()
+	reflection.Register(server)
 
-	greeting_v1.RegisterGreeterServiceServer(server, service.GreetingService{})
-	episodes_v1.RegisterEpisodesServiceServer(server, service.EpisodesService{})
+	episodesService, err := service.NewEpisodesService()
+	if err != nil {
+		logger.Panic("Failed to create EpisodesService", zap.Error(err))
+	}
+
+	greetingv1.RegisterGreeterServiceServer(server, service.GreetingService{})
+	episodesv1.RegisterEpisodesServiceServer(server, episodesService)
 	logger.Info("Handlers registered")
 
 	go signalsListener(server)
