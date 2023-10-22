@@ -9,6 +9,11 @@ service EpisodesService {
   rpc GetSeason(SeasonRequest) returns (SeasonResponse) {}
 }
 
+enum Series {
+  BUFFY = 0;
+  ANGEL = 1;
+}
+
 message Episode {
   string id = 1;
   string name = 2;
@@ -20,6 +25,7 @@ message Episode {
 message EpisodeRequest {
   int32 season = 1;
   int32 episode = 2;
+  Series series = 3;
 }
 
 message EpisodeResponse {
@@ -28,6 +34,7 @@ message EpisodeResponse {
 
 message SeasonRequest {
   int32 season = 1;
+  Series series = 2;
 }
 
 message SeasonResponse {
