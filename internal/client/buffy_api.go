@@ -20,12 +20,21 @@ type BuffyClient struct {
 	logger     *zap.Logger
 }
 
+type CastMember struct {
+	Id      string `json:"_id"`
+	Name    string `json:"name"`
+	Picture string `json:"profilePicture"`
+}
+
 type BuffyEpisode struct {
-	Id          string `json:"_id"`
-	Episode     string `json:"episodeName"`
-	Description string `json:"description"`
-	Trivia      string `json:"trivia"`
-	Screenshot  string `json:"episodeScreenshot"`
+	Id          string       `json:"_id"`
+	Episode     string       `json:"episodeName"`
+	Description string       `json:"description"`
+	Trivia      string       `json:"trivia"`
+	Screenshot  string       `json:"episodeScreenshot"`
+	Directors   []CastMember `json:"director"`
+	Writers     []CastMember `json:"writer"`
+	Cast        []CastMember `json:"episodeCast"`
 }
 
 func NewBuffyClient() (*BuffyClient, error) {

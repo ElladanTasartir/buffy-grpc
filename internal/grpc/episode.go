@@ -30,6 +30,8 @@ func (es *EpisodesService) GetEpisode(ctx context.Context, req *proto.EpisodeReq
 		return nil, err
 	}
 
+	directors, writers, cast := es.mapCastMembersToResponse(&episode)
+
 	return &proto.EpisodeResponse{
 		Episode: &proto.Episode{
 			Id:          episode.Id,
@@ -37,6 +39,9 @@ func (es *EpisodesService) GetEpisode(ctx context.Context, req *proto.EpisodeReq
 			Description: episode.Description,
 			Screenshot:  episode.Screenshot,
 			Trivia:      episode.Trivia,
+			Directors:   directors,
+			Writers:     writers,
+			Cast:        cast,
 		},
 	}, nil
 }
@@ -50,16 +55,49 @@ func (es *EpisodesService) GetSeason(ctx context.Context, req *proto.SeasonReque
 
 	var response []*proto.Episode
 	for _, episode := range episodes {
+		directors, writers, cast := es.mapCastMembersToResponse(&episode)
 		response = append(response, &proto.Episode{
 			Id:          episode.Id,
 			Name:        episode.Episode,
 			Description: episode.Description,
 			Screenshot:  episode.Screenshot,
 			Trivia:      episode.Trivia,
+			Directors:   directors,
+			Writers:     writers,
+			Cast:        cast,
 		})
 	}
 
 	return &proto.SeasonResponse{
 		Episodes: response,
 	}, nil
+}
+
+func (es *EpisodesService) mapCastMembersToResponse(episode *buffyClient.BuffyEpisode) ([]*proto.CastMember, []*proto.CastMember, []*proto.CastMember) {
+	var cast []*proto.CastMember
+	for _, member := range episode.Cast {
+		cast = append(cast, &proto.CastMember{
+			Id:      member.Id,
+			Name:    member.Name,
+			Picture: member.Picture,
+		})
+	}
+	var directors []*proto.CastMember
+	for _, director := range episode.Directors {
+		directors = append(directors, &proto.CastMember{
+			Id:      director.Id,
+			Name:    director.Name,
+			Picture: director.Picture,
+		})
+	}
+	var writers []*proto.CastMember
+	for _, writer := range episode.Writers {
+		writers = append(writers, &proto.CastMember{
+			Id:      writer.Id,
+			Name:    writer.Name,
+			Picture: writer.Picture,
+		})
+	}
+
+	return directors, writers, cast
 }
