@@ -20,6 +20,15 @@ message Episode {
   string description = 3;
   string trivia = 4;
   string screenshot = 5;
+  repeated CastMember directors = 6;
+  repeated CastMember writers = 7;
+  repeated CastMember cast = 8;
+}
+
+message CastMember {
+  string id = 1;
+  string name = 2;
+  string picture = 3;
 }
 
 message EpisodeRequest {
